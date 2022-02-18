@@ -12,4 +12,4 @@ This project was created with **create-discord-app**!
 
 # Join Our Discord Server
 
-**[https://discord.gg/2SUybzb](https://discord.gg/2SUybzb)**
+**[https://discord.gg/rvQxshqg5K](https://discord.gg/rvQxshqg5K)**
