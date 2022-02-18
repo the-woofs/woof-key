@@ -3,7 +3,7 @@ const Command = require("../Structures/Command");
 const {
   VoiceConnectionStatus,
   AudioPlayerStatus,
-	joinVoiceChannel
+  joinVoiceChannel,
 } = require("@discordjs/voice");
 
 module.exports = class extends Command {
