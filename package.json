@@ -12,9 +12,14 @@
     "eslint-config-tesseract": "^0.0.2"
   },
   "dependencies": {
-    "discord.js": "^13.0.0-dev.4d53d0f.1626566655",
+    "@discordjs/opus": "^0.5.3",
+    "@discordjs/voice": "^0.8.0",
+    "discord.js": "^13.6.0",
     "glob": "^7.1.6",
+    "libsodium-wrappers": "^0.7.9",
     "path": "^0.12.7",
-    "util": "^0.12.3"
+    "util": "^0.12.3",
+    "youtube-search-without-api-key": "^1.0.7",
+    "ytdl-core": "^4.10.1"
   }
 }

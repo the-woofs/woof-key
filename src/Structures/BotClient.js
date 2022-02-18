@@ -9,6 +9,7 @@ module.exports = class BotClient extends Client {
         Intents.FLAGS.GUILD_MESSAGES,
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        Intents.FLAGS.GUILD_VOICE_STATES
       ],
       allowedMentions: {
         repliedUser: false,
