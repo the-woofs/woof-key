@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const BotClient = require("./Structures/BotClient");
 const config = require("../config");
 
