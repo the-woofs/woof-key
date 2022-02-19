@@ -1,8 +1,6 @@
 const Command = require("../Structures/Command");
-const Queue = require("../Structures/Queue");
 const yt = require("youtube-search-without-api-key");
 const ytdl = require("ytdl-core");
-const fs = require("fs");
 
 const {
   joinVoiceChannel,
