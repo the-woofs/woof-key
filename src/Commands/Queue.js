@@ -1,21 +1,27 @@
 const Command = require("../Structures/Command");
-
-const { getVoiceConnection } = require("@discordjs/voice");
+const { MessageEmbed } = require("discord.js");
 
 module.exports = class extends Command {
   constructor(...args) {
     super(...args, {
-      aliases: ["stop"],
-      description: "Stop music",
+      aliases: ["queue"],
+      description: "Show queue",
       category: "Utilities",
     });
   }
 
   async run(message) {
-    const { channel } = message.member.voice;
     try {
-      const connection = getVoiceConnection(channel.guild.id);
-      connection.destroy();
+      if (!process.env["queueList"]) {
+        message.reply("Queue Empty");
+      } else {
+        const queue = process.env["queueList"].split(",");
+        const embed = new MessageEmbed()
+          .setColor("#0099ff")
+          .setTitle("Queue")
+          .setDescription(queue.join("\n"));
+	message.reply({embeds: [embed]});
+      }
     } catch (e) {
       message.channel.send("Error: " + e);
     }

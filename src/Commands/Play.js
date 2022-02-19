@@ -19,7 +19,7 @@ module.exports = class extends Command {
     });
   }
 
-  async playResource(queue, video_link_id, connection) {
+  async playResource(queue, video_link_id, connection, channel) {
     if (process.env["queueBusy"] != "true") {
       console.log(process.env["queueBusy"]);
       const video_link = queue[video_link_id];
@@ -33,6 +33,7 @@ module.exports = class extends Command {
       });
       const resource = createAudioResource(stream);
       player.play(resource);
+      channel.send(`Now playing: ${video_link}`);
 
       process.env["queueBusy"] = "true";
       connection.subscribe(player);
@@ -45,7 +46,7 @@ module.exports = class extends Command {
         video_link_id++;
         console.log(queue[video_link_id]);
         if (queue[video_link_id]) {
-          this.playResource(queue, video_link_id, connection);
+          this.playResource(queue, video_link_id, connection, channel);
         }
       });
     }
@@ -91,6 +92,7 @@ module.exports = class extends Command {
       queue = process.env["queueList"].split(",");
 
       console.log(process.env["queueList"]);
+      message.reply(`Added ${video_link} to queue`);
 
       console.log(queue);
       if (queue[0] === "") {
@@ -98,7 +100,7 @@ module.exports = class extends Command {
       }
       for (let video_link_id in queue) {
         console.log(queue[video_link_id]);
-        this.playResource(queue, video_link_id, connection);
+        this.playResource(queue, video_link_id, connection, message.channel);
       }
     } catch (e) {
       message.channel.send("Error: " + e);
