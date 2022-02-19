@@ -13,7 +13,7 @@ module.exports = class extends Command {
   async run(message) {
     try {
       if (!process.env["queueList"]) {
-        message.reply("Queue is Empty");
+        message.reply("Queue is Empty.");
       } else {
         const queue = process.env["queueList"].split(",");
         const embed = new MessageEmbed()
