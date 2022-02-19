@@ -1,4 +1,5 @@
 const Command = require("../Structures/Command");
+const Queue = require("../Structures/Queue");
 const yt = require("youtube-search-without-api-key");
 const ytdl = require("ytdl-core");
 const fs = require("fs");
@@ -7,6 +8,7 @@ const {
   joinVoiceChannel,
   createAudioPlayer,
   NoSubscriberBehavior,
+  AudioPlayerStatus,
   createAudioResource,
 } = require("@discordjs/voice");
 
@@ -17,6 +19,38 @@ module.exports = class extends Command {
       description: "Play music",
       category: "Utilities",
     });
+  }
+
+  async playResource(queue, video_link_id, connection) {
+    if (process.env["queueBusy"] != "true") {
+      console.log(process.env["queueBusy"]);
+      const video_link = queue[video_link_id];
+      console.log(video_link);
+      const stream = ytdl(video_link, { filter: "audioonly" });
+
+      const player = createAudioPlayer({
+        behaviors: {
+          noSubscriber: NoSubscriberBehavior.Pause,
+        },
+      });
+      const resource = createAudioResource(stream);
+      player.play(resource);
+
+      process.env["queueBusy"] = "true";
+      connection.subscribe(player);
+      player.on(AudioPlayerStatus.Idle, () => {
+        console.log("The audio player has done playing");
+        process.env["queueBusy"] = "false";
+        console.log(process.env["queueBusy"]);
+        let queueString = process.env["queueList"].trim();
+        let queue = queueString.split(",");
+        video_link_id++;
+        console.log(queue[video_link_id]);
+        if (queue[video_link_id]) {
+          this.playResource(queue, video_link_id, connection);
+        }
+      });
+    }
   }
 
   async run(message) {
@@ -36,27 +70,40 @@ module.exports = class extends Command {
           "Please provide the name of the song you would like to play."
         );
       }
+
       let video = await yt.search(song_name);
       let video_link = video[0].snippet.url;
-      const stream = ytdl(video_link, { filter: "audioonly" });
-
-      const player = createAudioPlayer({
-        behaviors: {
-          noSubscriber: NoSubscriberBehavior.Pause,
-        },
-      });
-      const resource = createAudioResource(stream);
-
-      player.play(resource);
 
       const connection = joinVoiceChannel({
         channelId: channel.id,
         guildId: channel.guild.id,
         adapterCreator: channel.guild.voiceAdapterCreator,
       });
-      connection.subscribe(player);
+
+      process.env["queueList"] = process.env["queueList"]
+        ? process.env["queueList"]
+        : "";
+
+      let queueString = process.env["queueList"].trim();
+      let queue = queueString.split(",");
+
+      queue.push(video_link);
+
+      process.env["queueList"] = queue.join(",");
+      queue = process.env["queueList"].split(",");
+
+      console.log(process.env["queueList"]);
+
+      console.log(queue);
+      if (queue[0] === "") {
+        console.log(queue.shift());
+      }
+      for (let video_link_id in queue) {
+        console.log(queue[video_link_id]);
+        this.playResource(queue, video_link_id, connection);
+      }
     } catch (e) {
-	    message.channel.send("Error: " + e);
+      message.channel.send("Error: " + e);
     }
   }
 };
