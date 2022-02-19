@@ -33,7 +33,7 @@ module.exports = class extends Command {
       });
       const resource = createAudioResource(stream);
       player.play(resource);
-      channel.send(`Now playing: ${video_link}`);
+      channel.send(`**Now playing: ${video_link}**`);
 
       process.env["queueBusy"] = "true";
       connection.subscribe(player);
@@ -57,18 +57,19 @@ module.exports = class extends Command {
 
     try {
       const args = message.content.split(" ");
-      const song_name = args.slice(1).join(" ");
 
       if (!channel) {
-        return message.channel.send(
+        return message.reply(
           "You need to be in a voice channel to use this command."
         );
       }
-      if (!args) {
-        return message.channel.send(
+      if (!args.slice(1).join(" ").trim()) {
+        return message.reply(
           "Please provide the name of the song you would like to play."
         );
       }
+
+      const song_name = args.slice(1).join(" ");
 
       let video = await yt.search(song_name);
       let video_link = video[0].snippet.url;
@@ -103,7 +104,7 @@ module.exports = class extends Command {
         this.playResource(queue, video_link_id, connection, message.channel);
       }
     } catch (e) {
-      message.channel.send("Error: " + e);
+      message.channel.send("__**Error From JavaScript Console:**__\n " + "```\n" + e + "\n```");
     }
   }
 };

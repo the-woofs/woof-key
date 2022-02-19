@@ -13,7 +13,7 @@ module.exports = class extends Command {
   async run(message) {
     try {
       if (!process.env["queueList"]) {
-        message.reply("Queue Empty");
+        message.reply("Queue is Empty");
       } else {
         const queue = process.env["queueList"].split(",");
         const embed = new MessageEmbed()
@@ -23,7 +23,7 @@ module.exports = class extends Command {
 	message.reply({embeds: [embed]});
       }
     } catch (e) {
-      message.channel.send("Error: " + e);
+      message.channel.send("__**Error From JavaScript Console:**__\n " + "```\n" + e + "\n```");
     }
   }
 };
