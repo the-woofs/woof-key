@@ -1,6 +1,11 @@
 const ytdl = require("ytdl-core");
+const {
+  createAudioPlayer,
+  NoSubscriberBehavior,
+  createAudioResource,
+} = require("@discordjs/voice");
 
-module.exports = function playFromSearch(video_link, connection, channel) {
+module.exports = function playFromSearch(video_link, connection) {
   const stream = ytdl(video_link, { filter: "audioonly" });
   const player = createAudioPlayer({
     behaviors: {

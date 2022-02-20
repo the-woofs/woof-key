@@ -1,72 +1,15 @@
 const Command = require("../Structures/Command");
+const Queue = require("../Structures/Queue");
+const playFromQueue = require("../Functions/playFromQueue");
 const yt = require("youtube-search-without-api-key");
-const ytdl = require("ytdl-core");
-
-const {
-  joinVoiceChannel,
-  createAudioPlayer,
-  NoSubscriberBehavior,
-  AudioPlayerStatus,
-  createAudioResource,
-} = require("@discordjs/voice");
 
 module.exports = class extends Command {
   constructor(...args) {
     super(...args, {
       aliases: ["play"],
-      description: "Play music",
-      category: "Utilities",
+      description: "Play provided music/add it to the queue.",
+      category: "Music",
     });
-  }
-
-  async removeFirstItemFromQueue() {
-    let queueString = process.env["queueList"].trim();
-    let queue = queueString.split(",");
-
-    console.log(queue.shift());
-
-    process.env["queueList"] = queue.join(",");
-    queue = process.env["queueList"].split(",");
-  }
-
-  async playResource(queue, video_link_id, connection, channel) {
-    if (process.env["queueBusy"] != "true") {
-      console.log(process.env["queueBusy"]);
-      const video_link = queue[video_link_id];
-      console.log(video_link);
-      this.removeFirstItemFromQueue();
-      if (process.env["queueBusy"] == "true") {
-        this.removeFirstItemFromQueue();
-      }
-
-      const stream = ytdl(video_link, { filter: "audioonly" });
-
-      const player = createAudioPlayer({
-        behaviors: {
-          noSubscriber: NoSubscriberBehavior.Pause,
-        },
-      });
-      const resource = createAudioResource(stream);
-      player.play(resource);
-      channel.send(`**Now playing: ${video_link}**`);
-
-      process.env["queueBusy"] = "true";
-      connection.subscribe(player);
-      player.on(AudioPlayerStatus.Idle, () => {
-        console.log("The audio player has done playing");
-
-        process.env["queueBusy"] = "false";
-        console.log(process.env["queueBusy"]);
-        console.log(process.env["queueList"]);
-
-        let queueString = process.env["queueList"].trim();
-        let queue = queueString.split(",");
-        console.log(queue[video_link_id]);
-        if (queue[video_link_id]) {
-          this.playResource(queue, video_link_id, connection, channel);
-        }
-      });
-    }
   }
 
   async run(message) {
@@ -74,51 +17,25 @@ module.exports = class extends Command {
 
     try {
       const args = message.content.split(" ");
-
-      if (!channel) {
-        return message.reply(
-          "You need to be in a voice channel to use this command."
-        );
+      if (args.length == 1) {
+        message.reply("Please provide the name of the song.");
+        return;
       }
-      if (!args.slice(1).join(" ").trim()) {
-        return message.reply(
-          "Please provide the name of the song you would like to play."
-        );
-      }
+      const query = args.slice(1).join(" ");
 
-      const song_name = args.slice(1).join(" ");
+      let video = await yt.search(query);
+      let song = video[0].snippet.url;
 
-      let video = await yt.search(song_name);
-      let video_link = video[0].snippet.url;
+      const queue = new Queue();
 
-      const connection = joinVoiceChannel({
-        channelId: channel.id,
-        guildId: channel.guild.id,
-        adapterCreator: channel.guild.voiceAdapterCreator,
-      });
-
-      process.env["queueList"] = process.env["queueList"]
-        ? process.env["queueList"]
-        : "";
-
-      let queueString = process.env["queueList"].trim();
-      let queue = queueString.split(",");
-
-      queue.push(video_link);
-
-      process.env["queueList"] = queue.join(",");
-      queue = process.env["queueList"].split(",");
-
-      console.log(process.env["queueList"]);
-      message.reply(`Added ${video_link} to queue`);
-
-      console.log(queue);
-      if (queue[0] === "") {
-        console.log(queue.shift());
-      }
-      for (let video_link_id in queue) {
-        console.log(queue[video_link_id]);
-        this.playResource(queue, video_link_id, connection, message.channel);
+      if (queue.getBusy()) {
+        queue.add(song);
+        console.log(queue.get());
+        return;
+      } else {
+        playFromQueue(queue.get, connection);
+        queue.setBusy(true);
+        console.log(queue.get());
       }
     } catch (e) {
       message.channel.send(
