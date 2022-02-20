@@ -1,5 +1,5 @@
 const Event = require("../Structures/Event");
-const config = require("../../config.json");
+// const config = require("../../config.json");
 
 module.exports = class extends Event {
   async run(interaction) {
