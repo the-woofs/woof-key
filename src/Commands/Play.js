@@ -19,11 +19,24 @@ module.exports = class extends Command {
     });
   }
 
+  async removeFirstItemFromQueue() {
+    let queueString = process.env["queueList"].trim();
+    let queue = queueString.split(",");
+
+    console.log(queue.shift());
+
+    process.env["queueList"] = queue.join(",");
+    queue = process.env["queueList"].split(",");
+  }
+
   async playResource(queue, video_link_id, connection, channel) {
     if (process.env["queueBusy"] != "true") {
       console.log(process.env["queueBusy"]);
       const video_link = queue[video_link_id];
       console.log(video_link);
+      this.removeFirstItemFromQueue();
+      this.removeFirstItemFromQueue();
+
       const stream = ytdl(video_link, { filter: "audioonly" });
 
       const player = createAudioPlayer({
@@ -39,11 +52,13 @@ module.exports = class extends Command {
       connection.subscribe(player);
       player.on(AudioPlayerStatus.Idle, () => {
         console.log("The audio player has done playing");
+
         process.env["queueBusy"] = "false";
         console.log(process.env["queueBusy"]);
+        console.log(process.env["queueList"]);
+
         let queueString = process.env["queueList"].trim();
         let queue = queueString.split(",");
-        video_link_id++;
         console.log(queue[video_link_id]);
         if (queue[video_link_id]) {
           this.playResource(queue, video_link_id, connection, channel);
@@ -104,7 +119,9 @@ module.exports = class extends Command {
         this.playResource(queue, video_link_id, connection, message.channel);
       }
     } catch (e) {
-      message.channel.send("__**Error From JavaScript Console:**__\n " + "```\n" + e + "\n```");
+      message.channel.send(
+        "__**Error From JavaScript Console:**__\n " + "```\n" + e + "\n```"
+      );
     }
   }
 };
