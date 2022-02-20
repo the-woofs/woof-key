@@ -35,7 +35,9 @@ module.exports = class extends Command {
       const video_link = queue[video_link_id];
       console.log(video_link);
       this.removeFirstItemFromQueue();
-      this.removeFirstItemFromQueue();
+      if (process.env["queueBusy"] == "true") {
+        this.removeFirstItemFromQueue();
+      }
 
       const stream = ytdl(video_link, { filter: "audioonly" });
 
