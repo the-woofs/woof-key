@@ -6,7 +6,8 @@ function playFromQueue(
   connection,
   songID,
   busyStateFunction,
-  queueClearFunction
+  queueClearFunction,
+  message
 ) {
   if (!songID) {
     songID = 0;
@@ -24,16 +25,18 @@ function playFromQueue(
     busyStateFunction(false);
     return;
   }
-  console.log(`Going to play ${song} from queue.`);
+  message.channel.send(`**Started** playing ${song}`);
   songID++;
   console.log(`Incremented SONG ID. SONG ID is: ${songID}`);
   const continueFunction = () => {
+    message.channel.send(`**Done** playing. Moving on.`);
     playFromQueue(
       queueReturnFunction,
       connection,
       songID,
       busyStateFunction,
-      queueClearFunction
+      queueClearFunction,
+      message
     );
   };
   playFromLink.playFromLink(song, connection, continueFunction);
