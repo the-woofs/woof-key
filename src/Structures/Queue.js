@@ -1,5 +1,6 @@
 module.exports = class Queue {
   constructor() {
+    this.items = [];
     if (process.env.QUEUE) {
       this.items = JSON.parse(process.env.QUEUE);
     } else {
@@ -20,25 +21,31 @@ module.exports = class Queue {
   }
 
   get() {
+    if (!this) {
+      return JSON.parse(process.env.QUEUE);
+    }
+    if (process.env.QUEUE) {
+      this.items = JSON.parse(process.env.QUEUE);
+    }
     return this.items;
   }
 
   add(item) {
-    this.items.push(item);
-    this.apply();
+    let items = this.get();
+    items.push(item);
+    process.env.QUEUE = JSON.stringify(items);
   }
 
   clear() {
-    this.items = [];
-    this.apply();
+    const items = [];
+    process.env.QUEUE = JSON.stringify(items);
   }
 
   setBusy(value) {
-    this.busy = value;
     process.env.BUSY = value;
   }
 
   getBusy() {
-    return this.busy;
+    return process.env.BUSY;
   }
 };
