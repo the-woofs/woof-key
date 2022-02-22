@@ -4,8 +4,8 @@ const index = require("../index.js");
 module.exports = class extends Command {
   constructor(...args) {
     super(...args, {
-      aliases: ["youtube"],
-      description: "Plays provided youtube/add it to the queue.",
+      aliases: ["chess"],
+      description: "Play chess.",
       category: "Act",
     });
   }
@@ -20,7 +20,7 @@ module.exports = class extends Command {
     }
     try {
       index.client.discordTogether
-        .createTogetherCode(message.member.voice.channel.id, "youtube")
+        .createTogetherCode(message.member.voice.channel.id, "chess")
         .then(async (invite) => {
           return message.channel.send(`Note: you have to click on the link lil nerd, not the 'Play' button, in order to start the activity.\n\n${invite.code}`);
         });
