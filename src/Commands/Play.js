@@ -21,43 +21,49 @@ module.exports = class extends Command {
         "You need to be in a voice channel to use this command."
       );
     }
-    const args = message.content.split(" ");
-    if (args.length == 1) {
-      message.reply("Please provide the name of the song.");
-      return;
-    }
-    const query = args.slice(1).join(" ");
+    try {
+      const args = message.content.split(" ");
+      if (args.length == 1) {
+        message.reply("Please provide the name of the song.");
+        return;
+      }
+      const query = args.slice(1).join(" ");
 
-    let video = await yt.search(query);
-    let song = video[0].snippet.url;
+      let video = await yt.search(query);
+      let song = video[0].snippet.url;
 
-    const queue = new Queue();
+      const queue = new Queue();
 
-    const connection = joinVoiceChannel({
-      channelId: channel.id,
-      guildId: channel.guild.id,
-      adapterCreator: channel.guild.voiceAdapterCreator,
-    });
+      const connection = joinVoiceChannel({
+        channelId: channel.id,
+        guildId: channel.guild.id,
+        adapterCreator: channel.guild.voiceAdapterCreator,
+      });
 
-    if (queue.getBusy() == "true") {
-      queue.add(song);
-      console.log(queue.get());
-      return message.reply(`**Added** ${song} to queue.`);
-    } else {
-      message.reply(`**Added** <${song}> to queue.`);
-      console.log("Playing from queue");
-      queue.add(song);
-      console.log(queue.get());
-      playFromQueue.playFromQueue(
-        queue.get,
-        connection,
-        0,
-        queue.setBusy,
-        queue.clear,
-        message
+      if (queue.getBusy() == "true") {
+        queue.add(song);
+        console.log(queue.get());
+        return message.reply(`**Added** ${song} to queue.`);
+      } else {
+        message.reply(`**Added** <${song}> to queue.`);
+        console.log("Playing from queue");
+        queue.add(song);
+        console.log(queue.get());
+        playFromQueue.playFromQueue(
+          queue.get,
+          connection,
+          0,
+          queue.setBusy,
+          queue.clear,
+          message
+        );
+        queue.setBusy(true);
+        console.log(queue.get());
+      }
+    } catch (err) {
+      message.channel.send(
+        "**Error from console**\n" + "```\n" + err + "\n```"
       );
-      queue.setBusy(true);
-      console.log(queue.get());
     }
   }
 };
