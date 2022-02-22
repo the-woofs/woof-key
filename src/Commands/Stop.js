@@ -22,6 +22,7 @@ module.exports = class extends Command {
     }
 
     const queue = new Queue();
+    queue.setBusy(false);
     queue.clear();
 
     const connection = getVoiceConnection(channel.guild.id);

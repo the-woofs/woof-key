@@ -2,7 +2,7 @@ const Command = require("../Structures/Command");
 const Queue = require("../Structures/Queue");
 const playFromQueue = require("../Functions/playFromQueue");
 const yt = require("youtube-search-without-api-key");
-const { joinVoiceChannel } = require("@discordjs/voice");
+const { joinVoiceChannel, VoiceConnectionStatus } = require("@discordjs/voice");
 
 module.exports = class extends Command {
   constructor(...args) {
@@ -38,6 +38,17 @@ module.exports = class extends Command {
         channelId: channel.id,
         guildId: channel.guild.id,
         adapterCreator: channel.guild.voiceAdapterCreator,
+      });
+
+      connection.on(VoiceConnectionStatus.Ready, () => {
+        console.log(
+          "The connection has entered the Ready state - ready to play audio!"
+        );
+      });
+      connection.on(VoiceConnectionStatus.Disconnected, () => {
+        message.channel.send("Me has been disconnected. Clearing the queue.");
+        queue.setBusy(false);
+        queue.clear();
       });
 
       if (queue.getBusy() == "true") {
