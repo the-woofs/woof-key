@@ -1,5 +1,6 @@
 const { Client, Collection, Intents } = require("discord.js");
 const Util = require("./Util.js");
+const { DiscordTogether } = require("discord-together");
 
 module.exports = class BotClient extends Client {
   constructor(options = {}) {
@@ -9,7 +10,7 @@ module.exports = class BotClient extends Client {
         Intents.FLAGS.GUILD_MESSAGES,
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Intents.FLAGS.GUILD_VOICE_STATES
+        Intents.FLAGS.GUILD_VOICE_STATES,
       ],
       allowedMentions: {
         repliedUser: false,
@@ -29,6 +30,8 @@ module.exports = class BotClient extends Client {
     this.events = new Collection();
 
     this.utils = new Util(this);
+
+    this.discordTogether = new DiscordTogether(this);
   }
 
   validate(options) {
