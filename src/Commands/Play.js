@@ -63,6 +63,7 @@ module.exports = class extends Command {
         playFromQueue.playFromQueue(
           queue.get,
           connection,
+          0,
           queue.setBusy,
           queue.clear,
           message
