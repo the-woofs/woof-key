@@ -4,14 +4,17 @@ const playFromLink = require("./playFromLink");
 function playFromQueue(
   queueReturnFunction,
   connection,
-  songID,
   busyStateFunction,
   queueClearFunction,
   message
 ) {
+  let songID = process.env.SONGID;
+
   if (!songID) {
     songID = 0;
   }
+
+  songID = parseInt(songID);
 
   console.log("Looping");
   console.log(queueReturnFunction);
@@ -27,13 +30,14 @@ function playFromQueue(
   }
   message.channel.send(`**Started** playing ${song}`);
   songID++;
+  process.env.SONGID = songID;
+  songID = parseInt(process.env.SONGID);
   console.log(`Incremented SONG ID. SONG ID is: ${songID}`);
   const continueFunction = () => {
     message.channel.send(`**Done** playing. Moving on.`);
     playFromQueue(
       queueReturnFunction,
       connection,
-      songID,
       busyStateFunction,
       queueClearFunction,
       message
