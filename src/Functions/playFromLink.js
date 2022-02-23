@@ -18,7 +18,9 @@ module.exports = {
           noSubscriber: NoSubscriberBehavior.Pause,
         },
       });
-      const resource = createAudioResource(stream);
+      const resource = createAudioResource(stream.stream, {
+        inputType: stream.type,
+      });
 
       console.log(`Going to play ${video_link}.`);
       player.play(resource);
