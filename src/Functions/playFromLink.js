@@ -1,4 +1,4 @@
-const ytdl = require("ytdl-core");
+const playdl = require("play-dl");
 const {
   createAudioPlayer,
   NoSubscriberBehavior,
@@ -12,7 +12,7 @@ module.exports = {
       if (!video_link) {
         return;
       }
-      const stream = ytdl(video_link, { filter: "audioonly" });
+      const stream = playdl.stream(video_link);
       const player = createAudioPlayer({
         behaviors: {
           noSubscriber: NoSubscriberBehavior.Pause,
