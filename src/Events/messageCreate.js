@@ -28,7 +28,13 @@ module.exports = class extends Event {
       this.client.commands.get(cmd.toLowerCase()) ||
       this.client.commands.get(this.client.aliases.get(cmd.toLowerCase()));
     if (command) {
-      command.run(message, args);
+      try {
+        command.run(message, args);
+      } catch (e) {
+        message.channel.send(
+          "__**Error From JavaScript Console:**__\n " + "```\n" + e + "\n```"
+        );
+      }
     }
   }
 };
