@@ -1,5 +1,5 @@
 require("dotenv").config();
-require("savior.js");
+require("./savior");
 
 const BotClient = require("./Structures/BotClient");
 const config = require("../config");
