@@ -5,7 +5,10 @@ async function playFromSearch(query, connection) {
   let video = await yt.search(query);
   let video_link = video[0].snippet.url;
   console.log("playing from link");
-  playFromLink.playFromLink(video_link, connection);
+  const func = function () {
+    playFromSearch("Lofi live lofi girl", connection);
+  };
+  playFromLink.playFromLink(video_link, connection, func);
 }
 
 module.exports = { playFromSearch };
