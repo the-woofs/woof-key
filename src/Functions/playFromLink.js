@@ -7,12 +7,12 @@ const {
 } = require("@discordjs/voice");
 
 module.exports = {
-  playFromLink: function (video_link, connection, idleFunction) {
+  playFromLink: async function (video_link, connection, idleFunction) {
     try {
       if (!video_link) {
         return;
       }
-      const stream = playdl.stream(video_link);
+      const stream = await playdl.stream(video_link);
       const player = createAudioPlayer({
         behaviors: {
           noSubscriber: NoSubscriberBehavior.Pause,
